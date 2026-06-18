@@ -1,1 +1,46 @@
+name: 'Build and Deploy to GKE'
 
+on:  
+  workflow_dispatch:
+    inputs:
+      bucket_name:
+        description: 'Enter a globally unique name for your GCS bucket'
+        required: true
+        type: string
+        default: 'gh-gcs-bucket-test-1234'
+env:
+  WORKLOAD_IDENTITY_PROVIDER: '/projects/1043465412482/locations/global/workloadIdentityPools/github/providers/github '
+  
+jobs:
+  setup-build-publish-deploy:
+    name: 'Setup, Build, Publish, and Deploy'
+    runs-on: 'ubuntu-latest'
+    environment: 'production'
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+    
+      - name: 'Authenticate to Google Cloud'
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:        
+         workload_identity_provider: '${{ env.WORKLOAD_IDENTITY_PROVIDER }}'
+         service_account: 'githubactions-sa@project-terraform-499713.iam.gserviceaccount.com'
+         
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Create GCS Bucket
+        run: |
+         gcloud storage buckets create gs://${{ github.event.inputs.bucket_name }} \
+          --location=us-east1 \
+          --uniform-bucket-level-access
+
+    
+
+      
