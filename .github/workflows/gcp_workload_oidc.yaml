@@ -9,7 +9,7 @@ on:
         type: string
         default: 'gh-gcs-bucket-test-1234'
 env:
-  WORKLOAD_IDENTITY_PROVIDER: '/projects/1043465412482/locations/global/workloadIdentityPools/github/providers/github '
+  WORKLOAD_IDENTITY_PROVIDER: 'projects/1043465412482/locations/global/workloadIdentityPools/github/providers/github '
   
 jobs:
   setup-build-publish-deploy:
